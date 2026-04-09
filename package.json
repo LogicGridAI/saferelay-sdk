@@ -1,0 +1,43 @@
+{
+  "name": "@logicgridai/safepaste-sdk",
+  "version": "0.1.0",
+  "description": "Zero-trust DLP SDK for React applications",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tsup": "^8.0.0"
+  },
+  "author": "LogicGrid AI LLC",
+  "license": "PROPRIETARY",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LogicGridAI/safepaste-sdk"
+  },
+  "keywords": [
+    "dlp", "security", "react", "clipboard",
+    "zero-trust", "pii", "redaction", "enterprise"
+  ]
+}
