@@ -1,6 +1,6 @@
 {
   "name": "@logicgridai/safepaste-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zero-trust DLP SDK for React applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
