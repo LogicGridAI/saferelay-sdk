@@ -4,30 +4,6 @@ import { Vault } from '../core/vault'
 import type { SafePasteConfig, SanitizeResult, ViolationEvent } from '../core/types'
 import { SafePasteContext } from './context'
 
-function insertText(target: EventTarget | null, text: string): void {
-  if (target == null) return
-  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-    const el = target
-    const start = el.selectionStart ?? 0
-    const end = el.selectionEnd ?? 0
-    el.focus()
-    el.setRangeText(text, start, end, 'end')
-    el.dispatchEvent(new Event('input', { bubbles: true }))
-    el.dispatchEvent(new Event('change', { bubbles: true }))
-  } else if (target instanceof HTMLElement && target.isContentEditable) {
-    const sel = window.getSelection()
-    if (sel == null || sel.rangeCount === 0) return
-    const range = sel.getRangeAt(0)
-    range.deleteContents()
-    const node = document.createTextNode(text)
-    range.insertNode(node)
-    range.setStartAfter(node)
-    range.setEndAfter(node)
-    sel.removeAllRanges()
-    sel.addRange(range)
-  }
-}
-
 function tokenizerConfigSignature(
   tier: SafePasteConfig['tier'],
   enabledPatterns: SafePasteConfig['enabledPatterns'],
@@ -66,19 +42,18 @@ export function SafePasteProvider({
 
   const [stats, setStats] = useState({ totalRedacted: 0, sessionCount: 0 })
 
-  const handlePasteCapture = useCallback(
-    (e: React.ClipboardEvent<HTMLDivElement>) => {
-      const text = e.clipboardData?.getData('text/plain') ?? ''
-      if (!text) return
-      const tokenizer = tokenizerRef.current
-      if (tokenizer == null) return
-      const result = tokenizer.sanitize(text)
-      if (result.count === 0) return
-      e.preventDefault()
-      e.stopPropagation()
-      const active =
-        (e.target as Node | null)?.ownerDocument?.activeElement ?? null
-      insertText(active, result.sanitized)
+  const config: SafePasteConfig = useMemo(
+    () => ({ licenseKey, tier, enabledPatterns, onViolation, webhookUrl }),
+    [licenseKey, tier, enabledPatterns, onViolation, webhookUrl]
+  )
+
+  const sanitize = useCallback((text: string): SanitizeResult => {
+    const tokenizer = tokenizerRef.current
+    if (tokenizer == null) {
+      return { sanitized: text, count: 0, matches: [] }
+    }
+    const result = tokenizer.sanitize(text)
+    if (result.count > 0) {
       setStats((s) => ({
         totalRedacted: s.totalRedacted + result.count,
         sessionCount: s.sessionCount + 1,
@@ -99,22 +74,9 @@ export function SafePasteProvider({
           body: JSON.stringify(violation),
         }).catch(() => {})
       }
-    },
-    [onViolation, webhookUrl]
-  )
-
-  const config: SafePasteConfig = useMemo(
-    () => ({ licenseKey, tier, enabledPatterns, onViolation, webhookUrl }),
-    [licenseKey, tier, enabledPatterns, onViolation, webhookUrl]
-  )
-
-  const sanitize = useCallback((text: string): SanitizeResult => {
-    const tokenizer = tokenizerRef.current
-    if (tokenizer == null) {
-      return { sanitized: text, count: 0, matches: [] }
     }
-    return tokenizer.sanitize(text)
-  }, [])
+    return result
+  }, [onViolation, webhookUrl])
 
   const value = useMemo(
     () => ({
@@ -128,9 +90,7 @@ export function SafePasteProvider({
 
   return (
     <SafePasteContext.Provider value={value}>
-      <div style={{ display: 'contents' }} onPasteCapture={handlePasteCapture}>
-        {children}
-      </div>
+      {children}
     </SafePasteContext.Provider>
   )
 }
