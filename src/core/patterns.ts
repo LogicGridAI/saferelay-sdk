@@ -1,4 +1,4 @@
-import type { Pattern } from './types'
+import type { Pattern, PatternGroup } from './types'
 
 function isPureHex(s: string): boolean {
   return /^[a-f0-9]+$/i.test(s)
@@ -291,5 +291,41 @@ export const THREAT_PATTERNS: Pattern[] = [
     freeTier: true,
     basic: true,
     regex: /(?<=^[A-Z][A-Z0-9_]*=).+$/gm,
+  },
+  {
+    type: 'SEED_PHRASE',
+    group: 'devsec' as PatternGroup,
+    freeTier: true,
+    basic: true,
+    regex: /\b([a-z]+\s){11}[a-z]+\b/g,
+    validate(m: string) {
+      const words = m.trim().split(/\s+/)
+      return words.length === 12
+    },
+  },
+  {
+    type: 'SEED_PHRASE',
+    group: 'devsec' as PatternGroup,
+    freeTier: true,
+    basic: true,
+    regex: /\b([a-z]+\s){23}[a-z]+\b/g,
+    validate(m: string) {
+      const words = m.trim().split(/\s+/)
+      return words.length === 24
+    },
+  },
+  {
+    type: 'ETH_PRIVATE_KEY',
+    group: 'devsec' as PatternGroup,
+    freeTier: false,
+    basic: false,
+    regex: /\b0x[a-fA-F0-9]{64}\b/g,
+  },
+  {
+    type: 'PEM_KEY',
+    group: 'devsec' as PatternGroup,
+    freeTier: true,
+    basic: true,
+    regex: /-----BEGIN\s(?:RSA\s|EC\s|OPENSSH\s)?PRIVATE KEY-----/g,
   },
 ]
