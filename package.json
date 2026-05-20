@@ -12,7 +12,9 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -34,10 +36,16 @@
   "license": "PROPRIETARY",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LogicGridAI/safepaste-sdk"
+    "url": "git+https://github.com/LogicGridAI/safepaste-sdk.git"
   },
   "keywords": [
-    "dlp", "security", "react", "clipboard",
-    "zero-trust", "pii", "redaction", "enterprise"
+    "dlp",
+    "security",
+    "react",
+    "clipboard",
+    "zero-trust",
+    "pii",
+    "redaction",
+    "enterprise"
   ]
 }
