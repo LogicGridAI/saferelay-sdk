@@ -1,11 +1,11 @@
-# @logicgridai/safepaste-sdk
+# @logicgridai/saferelay-sdk
 
 Zero-trust DLP (data loss prevention) primitives and React helpers for paste-time redaction of secrets and regulated identifiers.
 
 ## Install
 
 ```bash
-npm install @logicgridai/safepaste-sdk react react-dom
+npm install @logicgridai/saferelay-sdk react react-dom
 ```
 
 ## Usage
