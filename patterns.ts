@@ -173,6 +173,80 @@ export const THREAT_PATTERNS: Pattern[] = [
     validate: (m) => !isFalsePositiveApiMatch(m),
   },
 
+  // ── AWS Secret Access Key ─────────────────────────────────────────────────
+
+  {
+    type: 'AWS_SECRET',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    // Context-aware: catches KEY=value, KEY: value, KEY "value" etc.
+    regex: /(?:AWS_SECRET_ACCESS_KEY|aws_secret_access_key|SecretAccessKey)\s*[=:"'\s]+["']?([A-Za-z0-9/+=]{40})["']?/g,
+  },
+  {
+    type: 'AWS_SECRET',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    // Bare 40-char base64 value — excludes pure hex (git SHAs)
+    regex: /(?<![A-Za-z0-9/+])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])/g,
+    validate: (m) => !/^[0-9a-fA-F]{40}$/.test(m),
+  },
+
+  // ── Slack Webhook ─────────────────────────────────────────────────────────
+
+  {
+    type: 'SLACK_WEBHOOK',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /https:\/\/hooks\.slack\.com\/services\/[A-Z0-9]+\/[A-Z0-9]+\/[A-Za-z0-9]+/g,
+  },
+
+  // ── Google OAuth ──────────────────────────────────────────────────────────
+
+  {
+    type: 'GOOGLE_OAUTH',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    // Google OAuth Client ID
+    regex: /\b\d{6,}-[a-z0-9]+\.apps\.googleusercontent\.com\b/gi,
+  },
+  {
+    type: 'GOOGLE_OAUTH',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    // Google OAuth Client Secret
+    regex: /\bGOCSPX-[A-Za-z0-9_-]{20,}\b/g,
+  },
+  {
+    type: 'GOOGLE_OAUTH',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    // Google Refresh Token
+    regex: /\b1\/\/[A-Za-z0-9_\-]{10,}\b/g,
+  },
+
+  // ── Docker / npm tokens ───────────────────────────────────────────────────
+
+  {
+    type: 'DOCKER_TOKEN',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\bdckr_pat_[a-zA-Z0-9_-]{20,}\b/g,
+  },
+  {
+    type: 'NPM_TOKEN',
+    group: 'devsec',
+    freeTier: true,
+    basic: true,
+    regex: /\bnpm_[a-zA-Z0-9]{36,}\b/g,
+  },
+
   // ── Crypto — Free tier ────────────────────────────────────────────────────
 
   {
