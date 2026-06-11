@@ -2,7 +2,7 @@
 
 Zero-trust DLP primitives and React helpers for paste-time redaction of secrets and regulated identifiers.
 
-[![npm](https://img.shields.io/npm/v/@logicgridai/safepaste-sdk)](https://www.npmjs.com/package/@logicgridai/safepaste-sdk)
+[![npm](https://img.shields.io/npm/v/@logicgridai/saferelay-sdk)](https://www.npmjs.com/package/@logicgridai/saferelay-sdk)
 [![License](https://img.shields.io/badge/license-PROPRIETARY-red)](https://safepaste.app)
 
 ## Install
@@ -16,13 +16,13 @@ npm install @logicgridai/saferelay-sdk react react-dom
 Wrap your app with `SafePasteProvider`, then use `SafeInput` / `SafeTextArea` or the `useSafePaste()` hook for programmatic sanitization.
 
 ```tsx
-import { SafePasteProvider, SafeInput, SafeTextArea } from '@logicgridai/safepaste-sdk'
+import { SafePasteProvider, SafeInput, SafeTextArea } from '@logicgridai/saferelay-sdk'
 
 function App() {
   return (
     <SafePasteProvider
       tier="pro"
-      licenseKey={process.env.REACT_APP_SAFEPASTE_KEY}
+      licenseKey={process.env.REACT_APP_SAFERELAY_KEY}
     >
       {/* SafeInput and SafeTextArea auto-redact on paste */}
       <SafeInput placeholder="Paste anything safely..." />
@@ -35,7 +35,7 @@ function App() {
 ## Programmatic sanitization
 
 ```tsx
-import { useSafePaste } from '@logicgridai/safepaste-sdk'
+import { useSafePaste } from '@logicgridai/saferelay-sdk'
 
 function MyComponent() {
   const { sanitize, vault } = useSafePaste()
@@ -51,7 +51,7 @@ function MyComponent() {
 }
 ```
 
-## Named API key labels (v0.2.0+)
+## Named API key labels (v0.3.0+)
 
 Each provider gets its own placeholder type — making redacted output self-documenting:
 
@@ -60,11 +60,16 @@ Each provider gets its own placeholder type — making redacted output self-docu
 | `sk-proj-abc...` | `[OPENAI_KEY_1]` |
 | `sk-ant-abc...` | `[ANTHROPIC_KEY_1]` |
 | `AKIA1234ABCD` | `[AWS_KEY_1]` |
+| `wJalrX...` (bare secret) | `[AWS_SECRET_1]` |
 | `ghp_abc123` | `[GITHUB_PAT_1]` |
 | `github_pat_abc` | `[GITHUB_PAT_FG_1]` |
 | `xoxb-abc...` | `[SLACK_KEY_1]` |
+| `hooks.slack.com/...` | `[SLACK_WEBHOOK_1]` |
 | `AIzaXXX...` | `[GEMINI_KEY_1]` |
 | `sk_live_abc` | `[STRIPE_KEY_1]` |
+| `GOCSPCX-abc...` | `[GOOGLE_OAUTH_1]` |
+| `dckr_pat_abc...` | `[DOCKER_TOKEN_1]` |
+| `npm_abc...` | `[NPM_TOKEN_1]` |
 | `Bearer eyJ...` | `[BEARER_1]` |
 | Other API tokens | `[API_KEY_1]` |
 
@@ -74,6 +79,10 @@ Each provider gets its own placeholder type — making redacted output self-docu
 |---------|------|-----|
 | IPv4 addresses | ✓ | ✓ |
 | Named API keys (OpenAI, Anthropic, AWS, GitHub, Slack, Gemini, Stripe) | ✓ | ✓ |
+| AWS Secret Access Key (bare value) | ✓ | ✓ |
+| Slack webhook URLs | ✓ | ✓ |
+| Google OAuth credentials | ✓ | ✓ |
+| Docker / npm tokens | ✓ | ✓ |
 | Bearer tokens | ✓ | ✓ |
 | Bitcoin / Ethereum addresses | ✓ | ✓ |
 | Seed phrases (12/24 word) | ✓ | ✓ |
@@ -102,13 +111,13 @@ Each provider gets its own placeholder type — making redacted output self-docu
 `Vault`, `Tokenizer`, and `THREAT_PATTERNS` are free of browser APIs and run in Node.js or the browser — use them in CI/CD pipelines, serverless functions, or anywhere React isn't available.
 
 ```ts
-import { THREAT_PATTERNS, FREE_PATTERNS, PRO_PATTERNS } from '@logicgridai/safepaste-sdk'
+import { THREAT_PATTERNS, FREE_PATTERNS, PRO_PATTERNS } from '@logicgridai/saferelay-sdk'
 
 // Filter by tier
 const freeOnly = THREAT_PATTERNS.filter(p => p.freeTier)
 
 // Get all unique pattern types
-import { PATTERN_TYPES } from '@logicgridai/safepaste-sdk'
+import { PATTERN_TYPES } from '@logicgridai/saferelay-sdk'
 console.log(PATTERN_TYPES) // ['IP', 'OPENAI_KEY', 'AWS_KEY', ...]
 ```
 
@@ -123,8 +132,8 @@ console.log(PATTERN_TYPES) // ['IP', 'OPENAI_KEY', 'AWS_KEY', ...]
 ## Related packages
 
 - **Chrome Extension** — [safepaste.app](https://safepaste.app)
-- **Python CLI** — [`pip install safepaste-enterprise`](https://pypi.org/project/safepaste-enterprise/)
-- **Docker** — [`docker pull logicgridai/safepaste`](https://hub.docker.com/r/logicgridai/safepaste)
+- **Python CLI** — [`pip install saferelay-enterprise`](https://pypi.org/project/saferelay-enterprise/)
+- **Docker** — [`docker pull logicgridai/saferelay`](https://hub.docker.com/r/logicgridai/saferelay)
 
 ## License
 
