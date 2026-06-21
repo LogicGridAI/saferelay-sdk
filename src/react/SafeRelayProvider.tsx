@@ -12,7 +12,7 @@ function tokenizerConfigSignature(
   return `${tier ?? 'free'}:${licenseKey ?? ''}:${(enabledPatterns ?? []).join('\0')}`
 }
 
-export function SafePasteProvider({
+export function SafeRelayProvider({
   children,
   licenseKey,
   tier = 'free',

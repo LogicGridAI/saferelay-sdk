@@ -1,6 +1,6 @@
 import { useSafePasteContext } from './context'
 
-export function useSafePaste() {
+export function useSafeRelay() {
   const ctx = useSafePasteContext()
   return {
     sanitize: ctx.sanitize,
@@ -9,3 +9,9 @@ export function useSafePaste() {
     sanitizeText: (text: string) => ctx.sanitize(text),
   }
 }
+
+/**
+ * @deprecated Use `useSafeRelay` instead. Kept as an alias for backward
+ * compatibility; will be removed in a future major version.
+ */
+export const useSafePaste = useSafeRelay

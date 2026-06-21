@@ -13,21 +13,21 @@ npm install @logicgridai/saferelay-sdk react react-dom
 
 ## Usage
 
-Wrap your app with `SafePasteProvider`, then use `SafeInput` / `SafeTextArea` or the `useSafePaste()` hook for programmatic sanitization.
+Wrap your app with `SafeRelayProvider`, then use `SafeInput` / `SafeTextArea` or the `useSafeRelay()` hook for programmatic sanitization.
 
 ```tsx
-import { SafePasteProvider, SafeInput, SafeTextArea } from '@logicgridai/saferelay-sdk'
+import { SafeRelayProvider, SafeInput, SafeTextArea } from '@logicgridai/saferelay-sdk'
 
 function App() {
   return (
-    <SafePasteProvider
+    <SafeRelayProvider
       tier="pro"
       licenseKey={process.env.REACT_APP_SAFERELAY_KEY}
     >
       {/* SafeInput and SafeTextArea auto-redact on paste */}
       <SafeInput placeholder="Paste anything safely..." />
       <SafeTextArea placeholder="Logs, configs, API responses..." />
-    </SafePasteProvider>
+    </SafeRelayProvider>
   )
 }
 ```
@@ -35,10 +35,10 @@ function App() {
 ## Programmatic sanitization
 
 ```tsx
-import { useSafePaste } from '@logicgridai/saferelay-sdk'
+import { useSafeRelay } from '@logicgridai/saferelay-sdk'
 
 function MyComponent() {
-  const { sanitize, vault } = useSafePaste()
+  const { sanitize, vault } = useSafeRelay()
 
   const handleSubmit = (text: string) => {
     const { sanitized, count, matches } = sanitize(text)
@@ -57,7 +57,7 @@ Patterns are organized into groups: `devsec`, `fintech`, `corporate`, and `civic
 Enable only the groups (or specific types) your app needs via `enabledPatterns`:
 
 ```tsx
-<SafePasteProvider
+<SafeRelayProvider
   tier="pro"
   licenseKey={process.env.REACT_APP_SAFERELAY_KEY}
   enabledPatterns={['fintech', 'corporate']}  // e.g. a FinTech app
