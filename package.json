@@ -1,52 +1,52 @@
-﻿{
-    "name":  "@logicgridai/saferelay-sdk",
-    "version":  "0.4.0",
-    "description":  "Zero-trust local DLP SDK for React applications — SafeRelay.ai",
-    "main":  "dist/index.js",
-    "module":  "dist/index.mjs",
-    "types":  "dist/index.d.ts",
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.ts",
-                              "import":  "./dist/index.mjs",
-                              "require":  "./dist/index.js"
-                          }
-                },
-    "files":  [
-                  "dist"
-              ],
-    "scripts":  {
-                    "build":  "tsup",
-                    "dev":  "tsup --watch",
-                    "prepublishOnly":  "npm run build"
-                },
-    "peerDependencies":  {
-                             "react":  "\u003e=17.0.0",
-                             "react-dom":  "\u003e=17.0.0"
-                         },
-    "devDependencies":  {
-                            "typescript":  "^5.0.0",
-                            "@types/react":  "^18.0.0",
-                            "@types/react-dom":  "^18.0.0",
-                            "react":  "^18.0.0",
-                            "react-dom":  "^18.0.0",
-                            "tsup":  "^8.0.0"
-                        },
-    "author":  "LogicGrid AI LLC",
-    "license":  "PROPRIETARY",
-    "repository":  {
-                       "type":  "git",
-                       "url":  "git+https://github.com/LogicGridAI/saferelay-sdk.git"
-                   },
-    "keywords":  [
-                     "dlp",
-                     "security",
-                     "react",
-                     "clipboard",
-                     "zero-trust",
-                     "pii",
-                     "redaction",
-                     "enterprise",
-                     "saferelay"
-                 ]
+{
+    "name": "@logicgridai/saferelay-sdk",
+    "version": "0.5.0",
+    "description": "Zero-trust local DLP SDK for React applications — SafeRelay.ai",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "prepublishOnly": "npm run build"
+    },
+    "peerDependencies": {
+        "react": ">=17.0.0",
+        "react-dom": ">=17.0.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "tsup": "^8.0.0"
+    },
+    "author": "LogicGrid AI LLC",
+    "license": "PROPRIETARY",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/LogicGridAI/saferelay-sdk.git"
+    },
+    "keywords": [
+        "dlp",
+        "security",
+        "react",
+        "clipboard",
+        "zero-trust",
+        "pii",
+        "redaction",
+        "enterprise",
+        "saferelay"
+    ]
 }
