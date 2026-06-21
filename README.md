@@ -3,7 +3,7 @@
 Zero-trust DLP primitives and React helpers for paste-time redaction of secrets and regulated identifiers.
 
 [![npm](https://img.shields.io/npm/v/@logicgridai/saferelay-sdk)](https://www.npmjs.com/package/@logicgridai/saferelay-sdk)
-[![License](https://img.shields.io/badge/license-PROPRIETARY-red)](https://safepaste.app)
+[![License](https://img.shields.io/badge/license-PROPRIETARY-red)](https://saferelay.ai)
 
 ## Install
 
@@ -51,7 +51,29 @@ function MyComponent() {
 }
 ```
 
-## Named API key labels (v0.3.0+)
+## Choosing what to redact
+
+Patterns are organized into groups: `devsec`, `fintech`, `corporate`, and `civic`.
+Enable only the groups (or specific types) your app needs via `enabledPatterns`:
+
+```tsx
+<SafePasteProvider
+  tier="pro"
+  licenseKey={process.env.REACT_APP_SAFERELAY_KEY}
+  enabledPatterns={['fintech', 'corporate']}  // e.g. a FinTech app
+>
+```
+
+You can also work directly with the registry:
+
+```ts
+import { THREAT_PATTERNS, FREE_PATTERNS, PRO_PATTERNS, PATTERN_TYPES } from '@logicgridai/saferelay-sdk'
+
+const fintechOnly = THREAT_PATTERNS.filter(p => p.group === 'fintech')
+console.log(PATTERN_TYPES) // ['IP', 'OPENAI_KEY', 'AWS_KEY', ...]
+```
+
+## Named API key labels (v0.4.0+)
 
 Each provider gets its own placeholder type — making redacted output self-documenting:
 
@@ -67,72 +89,92 @@ Each provider gets its own placeholder type — making redacted output self-docu
 | `hooks.slack.com/...` | `[SLACK_WEBHOOK_1]` |
 | `AIzaXXX...` | `[GEMINI_KEY_1]` |
 | `sk_live_abc` | `[STRIPE_KEY_1]` |
-| `GOCSPCX-abc...` | `[GOOGLE_OAUTH_1]` |
-| `dckr_pat_abc...` | `[DOCKER_TOKEN_1]` |
+| `GOCSPX-abc...` | `[GOOGLE_OAUTH_1]` |
+| `dckr_pat_abc...` | `[DOCKER_KEY_1]` |
 | `npm_abc...` | `[NPM_TOKEN_1]` |
+| `SG.abc.xyz` | `[SENDGRID_KEY_1]` |
+| `SKabc...` | `[TWILIO_KEY_1]` |
 | `Bearer eyJ...` | `[BEARER_1]` |
-| Other API tokens | `[API_KEY_1]` |
 
-## What gets redacted
+## Context-aware Nigerian identifiers
 
-| Pattern | Free | Pro |
-|---------|------|-----|
-| IPv4 addresses | ✓ | ✓ |
-| Named API keys (OpenAI, Anthropic, AWS, GitHub, Slack, Gemini, Stripe) | ✓ | ✓ |
-| AWS Secret Access Key (bare value) | ✓ | ✓ |
-| Slack webhook URLs | ✓ | ✓ |
-| Google OAuth credentials | ✓ | ✓ |
-| Docker / npm tokens | ✓ | ✓ |
-| Bearer tokens | ✓ | ✓ |
-| Bitcoin / Ethereum addresses | ✓ | ✓ |
-| Seed phrases (12/24 word) | ✓ | ✓ |
-| PEM private keys | ✓ | ✓ |
-| .env file values | ✓ | ✓ |
-| MAC addresses | — | ✓ |
-| ETH private keys | — | ✓ |
-| Solana addresses | — | ✓ |
-| Credit cards (Luhn-validated) | — | ✓ |
-| US SSN | — | ✓ |
-| EU IBAN | — | ✓ |
-| UK NINO | — | ✓ |
-| Nigeria NIN / Bank / Phone | — | ✓ |
-| Canada SIN | — | ✓ |
-| India Aadhaar / PAN | — | ✓ |
-| South Africa ID | — | ✓ |
-| Australia TFN | — | ✓ |
-| Brazil CPF | — | ✓ |
-| Singapore NRIC | — | ✓ |
-| Germany Tax ID | — | ✓ |
-| US Green Card | — | ✓ |
-| Custom NDA keywords | — | ✓ |
+NIN and BVN are both 11-digit numbers and can't be told apart by length alone.
+The SDK uses the surrounding label to assign the correct type, and preserves the label:
+
+```text
+"BVN: 12345678901"           → "BVN: [NG_BVN_1]"
+"NIN: 12345678901"           → "NIN: [NG_NIN_1]"
+"National ID 12345678901"    → "National ID [NG_NIN_1]"
+```
+
+A bare, unlabeled 11-digit number is still redacted (as `[NG_NIN_1]`) so nothing leaks —
+it just receives a generic label when no context is present.
+
+## What gets redacted (53 types)
+
+Free tier covers developer secrets; Pro adds regulated PII and compliance identifiers.
+
+| Pattern | Group | Free | Pro |
+|---------|-------|------|-----|
+| IPv4 addresses | devsec | ✓ | ✓ |
+| OpenAI / Anthropic / Gemini keys | devsec | ✓ | ✓ |
+| AWS access keys + secret keys | devsec | ✓ | ✓ |
+| GitHub PAT / fine-grained / OAuth | devsec | ✓ | ✓ |
+| Slack tokens + webhook URLs | devsec | ✓ | ✓ |
+| Google OAuth credentials | devsec | ✓ | ✓ |
+| Stripe secret + publishable keys | devsec | ✓ | ✓ |
+| Docker / npm / Twilio / SendGrid tokens | devsec | ✓ | ✓ |
+| Bearer tokens, generic API keys | devsec | ✓ | ✓ |
+| Bitcoin / Ethereum addresses | devsec | ✓ | ✓ |
+| Solana addresses, WIF crypto keys | devsec | ✓ | ✓ |
+| Seed phrases (12 / 24 word) | devsec | ✓ | ✓ |
+| PEM private keys | devsec | ✓ | ✓ |
+| .env file values | devsec | ✓ | ✓ |
+| MAC addresses | devsec | — | ✓ |
+| 64-char hex crypto keys | devsec | — | ✓ |
+| Credit cards (Luhn-validated) | fintech | — | ✓ |
+| US SSN | fintech | — | ✓ |
+| Email addresses | fintech | — | ✓ |
+| EU IBAN | fintech | — | ✓ |
+| UK NINO | fintech | — | ✓ |
+| Nigeria NIN / BVN / Bank / Phone | fintech | — | ✓ |
+| Canada SIN | fintech | — | ✓ |
+| India Aadhaar / PAN | fintech | — | ✓ |
+| South Africa ID | fintech | — | ✓ |
+| Australia TFN | fintech | — | ✓ |
+| Brazil CPF | fintech | — | ✓ |
+| Singapore NRIC | fintech | — | ✓ |
+| Germany Tax ID | fintech | — | ✓ |
+| US Green Card | fintech | — | ✓ |
+| EIN / DUNS / EU VAT | corporate | — | ✓ |
+| GPS coordinates | civic | — | ✓ |
+| UNHCR registration IDs | civic | — | ✓ |
+| Donor / beneficiary case IDs | civic | ✓ | ✓ |
+| Custom Protected Terms | — | — | ✓ |
 
 ## Core modules
 
 `Vault`, `Tokenizer`, and `THREAT_PATTERNS` are free of browser APIs and run in Node.js or the browser — use them in CI/CD pipelines, serverless functions, or anywhere React isn't available.
 
 ```ts
-import { THREAT_PATTERNS, FREE_PATTERNS, PRO_PATTERNS } from '@logicgridai/saferelay-sdk'
+import { THREAT_PATTERNS, FREE_PATTERNS, PRO_PATTERNS, PATTERN_TYPES } from '@logicgridai/saferelay-sdk'
 
-// Filter by tier
 const freeOnly = THREAT_PATTERNS.filter(p => p.freeTier)
-
-// Get all unique pattern types
-import { PATTERN_TYPES } from '@logicgridai/saferelay-sdk'
-console.log(PATTERN_TYPES) // ['IP', 'OPENAI_KEY', 'AWS_KEY', ...]
+console.log(PATTERN_TYPES.length) // 53
 ```
 
 ## Pricing
 
 | Tier | Price | Get it |
 |------|-------|--------|
-| Free | $0 | [Chrome Web Store](https://chromewebstore.google.com/detail/safepaste-enterprise/ibdihcmplmiekaoofbcgeebkleafbkcn) |
+| Free | $0 | [Chrome Web Store](https://chromewebstore.google.com/detail/odeoilooelkodahbbdokbollgahdcaag) |
 | Pro | $7.99/mo or $59/yr | [safepaste.app/#pricing](https://safepaste.app/#pricing) |
 | SafeRelay Suite | $99 one-time | [safepaste.app/saferelay](https://safepaste.app/saferelay) |
 
 ## Related packages
 
-- **Chrome Extension** — [safepaste.app](https://safepaste.app)
-- **Python CLI** — [`pip install saferelay-enterprise`](https://pypi.org/project/saferelay-enterprise/)
+- **Browser Extension** — SafeRelay — Local AI DLP (Chrome & Firefox)
+- **Python CLI** — [`pip install saferelay`](https://pypi.org/project/saferelay/)
 - **Docker** — [`docker pull logicgridai/saferelay`](https://hub.docker.com/r/logicgridai/saferelay)
 
 ## License

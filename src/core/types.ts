@@ -1,4 +1,4 @@
-export type PatternGroup = 'devsec' | 'fintech' | 'basic'
+export type PatternGroup = 'devsec' | 'fintech' | 'corporate' | 'civic' | 'basic'
 
 export type Tier = 'free' | 'pro' | 'enterprise'
 
