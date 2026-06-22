@@ -55,6 +55,14 @@ function validCreditCard(match: string): boolean {
 
 export const THREAT_PATTERNS: Pattern[] = [
 
+  // ── Connection-string credentials (scheme://user:PASSWORD@host) ─────────
+  // Lookbehind matches ONLY the password, so whole-match replacement redacts
+  // just it and keeps scheme/user/host visible. Runs first.
+  {
+    type: 'CONN_STRING', group: 'devsec', freeTier: true, basic: true,
+    regex: /(?<=\b[a-z][a-z0-9+.\-]*:\/\/[^:/\s@]+:)[^\s]+?(?=@[a-zA-Z0-9.\-]+(?::\d+)?(?:[/\s]|$))/gi,
+  },
+
   // ── DevSec — Free tier ──────────────────────────────────────────────────
   {
     type: 'IP', group: 'devsec', freeTier: true, basic: true,
