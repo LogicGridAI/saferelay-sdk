@@ -1,6 +1,6 @@
 {
     "name": "@logicgridai/saferelay-sdk",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Zero-trust local DLP SDK for React applications — SafeRelay.ai",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
